@@ -8,27 +8,30 @@ module.exports = NodeHelper.create({
   },
 
   startPythonScript: function() {
-    // Start the Python script as a child process
-    this.pythonProcess = exec("python3 radar_sensor.py", { cwd: __dirname }, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Python script execution error: ${error}`);
-      }
-      console.error(`Python script stderr: ${stderr}`);
-    });
+    const { radarSensorPin, serialPort, baudRate, wledIpAddress } = this.config;
 
-    this.pythonProcess.stdout.on('data', (data) => {
+    // Start the Python script as a child process with configuration variables
+    const pythonProcess = exec(`python3 radar_sensor.py ${serialPort} ${baudRate} ${wledIpAddress}`, { cwd: __dirname });
+
+    pythonProcess.stdout.on('data', (data) => {
       console.log(`Python script stdout: ${data}`);
       // Example: Parse data from Python script and send notifications if needed
       if (data.includes("presence")) {
         this.sendSocketNotification("USER_PRESENCE", true);
       }
     });
+
+    pythonProcess.stderr.on('data', (data) => {
+      console.error(`Python script stderr: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+      console.log(`Python script process exited with code ${code}`);
+    });
   },
 
   stop: function() {
-    if (this.pythonProcess) {
-      this.pythonProcess.kill();
-    }
+    // Clean up any resources if needed
     console.log("Stopping node helper for: " + this.name);
   },
 
