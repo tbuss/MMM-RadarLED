@@ -1,0 +1,13 @@
+{
+    "name": "MMM-RadarLED",
+    "version": "1.0.0",
+    "description": "MagicMirror module to detect user presence using a radar sensor and control WLED.",
+    "main": "MMM-RadarLED.js",
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+      "request": "^2.88.2",
+      "serialport": "^10.4.0"  // Add serialport dependency
+    }
+  }
+  
