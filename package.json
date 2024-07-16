@@ -7,7 +7,7 @@
     "license": "MIT",
     "dependencies": {
       "request": "^2.88.2",
-      "serialport": "^10.4.0"  // Add serialport dependency
+      "serialport": "^10.4.0"
     }
-  }
+}
   
