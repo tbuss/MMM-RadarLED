@@ -134,16 +134,11 @@ def read_serial_frame():
 
 # Function to read radar sensor data
 def read_radar_sensor():
-    
     resp = read_serial_frame()
-    print(resp)
+    #print(resp)
 
+    return TARGET_NAME[meas['state']]
 
-    while True:
-        if ser.in_waiting > 0:
-            data = ser.readline().strip().decode('utf-8')
-            print("Data received from radar sensor:", data)
-            return data
 
 # Function to control WLED
 def control_wled(state):
@@ -167,12 +162,31 @@ if __name__ == "__main__":
     ser.baudrate = baud_rate
     ser.timeout = 1
 
+    no = 0
+    mov = 0
+    sta_com = 0
+
     read_firmware_version()
     while True:
         data = read_radar_sensor()
         # Example logic based on received data
-        if "presence" in data:
-            control_wled(True)
-            time.sleep(5)  # Adjust as needed
-        else:
-            control_wled(False)
+        if "no_target" in data:
+            print(data)
+            no = no + 1
+            #control_wled(True)
+            time.sleep(0.1)  # Adjust as needed
+        elif "moving_target" in data:
+            print(data)
+            mov = mov + 1
+            time.sleep(0.1)  # Adjust as needed
+        
+        elif "stationary_target" in data or "combined_target" in data:
+            print(data)
+            sta_com = sta_com + 1
+            time.sleep(0.1)  # Adjust as needed
+        
+
+            #control_wled(False)
+        print("--")
+        print(f"no:{no}, mov:{mov}, sta_com:{sta_com}")
+        #time.sleep(1)
