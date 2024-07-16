@@ -36,13 +36,13 @@ module.exports = NodeHelper.create({
 
     if (userDetected && !this.userPresenceDetected) {
       this.userPresenceDetected = true;
-      this.controlWLED(true);
+      this.controlWLED(true).catch(err => console.error("Error controlling WLED:", err));
       setTimeout(() => {
         this.sendSocketNotification("USER_PRESENCE");
       }, this.config.presenceTimeout * 1000);
     } else if (!userDetected && this.userPresenceDetected) {
       this.userPresenceDetected = false;
-      this.controlWLED(false);
+      this.controlWLED(false).catch(err => console.error("Error controlling WLED:", err));
     }
   },
 
@@ -71,22 +71,32 @@ module.exports = NodeHelper.create({
 
     if (userDetected && !this.userPresenceDetected) {
       this.userPresenceDetected = true;
-      this.controlWLED(true);
+      this.controlWLED(true).catch(err => console.error("Error controlling WLED:", err));
       setTimeout(() => {
         this.sendSocketNotification("USER_PRESENCE");
       }, this.config.presenceTimeout * 1000);
     } else if (!userDetected && this.userPresenceDetected) {
       this.userPresenceDetected = false;
-      this.controlWLED(false);
+      this.controlWLED(false).catch(err => console.error("Error controlling WLED:", err));
     }
   },
 
   controlWLED: function(state) {
     const url = `http://${this.config.wledIpAddress}/win&FX=${state ? 128 : 0}`;
-    request(url, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-        console.log("WLED state set to " + state);
-      }
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        if (error) {
+          console.error("Error setting WLED state:", error);
+          reject(error);
+        } else if (response.statusCode !== 200) {
+          const err = new Error(`Failed to set WLED state, status code: ${response.statusCode}`);
+          console.error(err);
+          reject(err);
+        } else {
+          console.log("WLED state set to " + state);
+          resolve(body);
+        }
+      });
     });
   }
 });
