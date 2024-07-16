@@ -13,6 +13,8 @@ MagicMirror module to detect user presence using a radar sensor and control WLED
     npm install
     ```
 
+The `postinstall` script will automatically rebuild the `serialport` package for Electron.
+
 ## Configuration
 Add the configuration to your `config.js` file:
 ```js
